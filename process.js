@@ -3,12 +3,10 @@ const os = require('os');
 const path = require('path');
 const readline = require('readline');
 
-const RGRAPH = /^Running cuGraph Leiden on \s*.*\/(.*?)\.mtx\.csv/m;
+const RGRAPH = /^Running cuGraph Louvain on \s*.*\/(.*?)\.mtx\.csv/m;
 const RORDER = /^order: (.+?) size: (.+) \[directed\] \{\}/m;
-const RMODUL = /^Leiden modularity: (.+)/m;
-const RTTIME = /^Leiden took: (.+?) s/m;
-const RNCOMS = /^Number of communities: (.+)/m;
-const RDCOMS = /^Number of disconnected communities: (.+)/m;
+const RMODUL = /^Louvain modularity: (.+)/m;
+const RTTIME = /^Louvain took: (.+?) s/m;
 
 
 
@@ -57,9 +55,6 @@ function readLogLine(ln, data, state) {
     state.size  = 0;
     state.time  = 0;
     state.modularity  = 0;
-    state.communities = 0;
-    state.disconnected_communities = 0;
-    state.rows = 0;
   }
   else if (RORDER.test(ln)) {
     var [, order, size] = RORDER.exec(ln);
@@ -68,23 +63,13 @@ function readLogLine(ln, data, state) {
   }
   else if (RMODUL.test(ln)) {
     var [, modularity] = RMODUL.exec(ln);
-    state.modularity += parseFloat(modularity);
+    state.modularity = parseFloat(modularity);
   }
   else if (RTTIME.test(ln)) {
     var [, time] = RTTIME.exec(ln);
-    state.time += 1000 * parseFloat(time);
-    ++state.rows;
-  }
-  else if (RNCOMS.test(ln)) {
-    var [, communities] = RNCOMS.exec(ln);
-    state.communities = parseFloat(communities);
-  }
-  else if (RDCOMS.test(ln)) {
-    var [, disconnected_communities] = RDCOMS.exec(ln);
-    state.disconnected_communities = parseFloat(disconnected_communities);
-    state.modularity /= state.rows;
-    state.time       /= state.rows;
-    data.get(state.graph).push(Object.assign({}, state));
+    data.get(state.graph).push(Object.assign({}, state, {
+      time: parseFloat(time) * 1000,
+    }));
   }
   return state;
 }
