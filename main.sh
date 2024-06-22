@@ -44,11 +44,11 @@ runAll() {
   # runCugraph "$HOME/Data/web-Stanford.mtx"    0 0 default
   runCugraph "$HOME/Data/indochina-2004.mtx"  0 0 default
   runCugraph "$HOME/Data/uk-2002.mtx"         0 0 default
-  runCugraph "$HOME/Data/arabic-2005.mtx"     0 0 default
-  runCugraph "$HOME/Data/uk-2005.mtx"         0 0 default
-  runCugraph "$HOME/Data/webbase-2001.mtx"    0 0 default
-  runCugraph "$HOME/Data/it-2004.mtx"         0 0 default
-  runCugraph "$HOME/Data/sk-2005.mtx"         0 0 default
+  # runCugraph "$HOME/Data/arabic-2005.mtx"     0 0 managed
+  # runCugraph "$HOME/Data/uk-2005.mtx"         0 0 managed
+  # runCugraph "$HOME/Data/webbase-2001.mtx"    0 0 managed
+  # runCugraph "$HOME/Data/it-2004.mtx"         0 0 managed
+  # runCugraph "$HOME/Data/sk-2005.mtx"         0 0 managed
   runCugraph "$HOME/Data/com-LiveJournal.mtx" 0 1 default
   runCugraph "$HOME/Data/com-Orkut.mtx"       0 1 default
   runCugraph "$HOME/Data/asia_osm.mtx"        0 1 default
