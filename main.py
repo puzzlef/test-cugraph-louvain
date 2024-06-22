@@ -7,7 +7,7 @@ import cugraph
 
 
 # Initialize RMM pool
-mode = sys.argv[3]
+mode = sys.argv[2]
 print("Initializing RMM pool...", flush=True)
 if mode == "managed":
   pool = rmm.mr.PoolMemoryResource(rmm.mr.ManagedMemoryResource(), initial_pool_size=2**36)
@@ -26,18 +26,13 @@ G    = cugraph.Graph()
 print("Creating cuGraph graph...", flush=True)
 G.from_cudf_edgelist(gdf, source='src', destination='dst', edge_attr='data', renumber=True)
 
-# Run Leiden
-print("Running Leiden (first)...", flush=True)
-parts, mod = cugraph.leiden(G)
+# Run Louvain
+print("Running Louvain (first)...", flush=True)
+parts, mod = cugraph.louvain(G)
 for i in range(4):
-  print("Running Leiden...", flush=True)
+  print("Running Louvain...", flush=True)
   t0 = time.time()
-  parts, mod = cugraph.leiden(G)
+  parts, mod = cugraph.louvain(G)
   t1 = time.time()
-  print("Leiden modularity: {:.6f}".format(mod), flush=True)
-  print("Leiden took: {:.6f} s".format(t1-t0), flush=True)
-
-# Save communities to file
-comm = os.path.expanduser(sys.argv[2])
-print("Saving communities to file: {}".format(comm), flush=True)
-parts.to_csv(comm, sep=' ', header=False, index=False, chunksize=1e6)
+  print("Louvain modularity: {:.6f}".format(mod), flush=True)
+  print("Louvain took: {:.6f} s".format(t1-t0), flush=True)
