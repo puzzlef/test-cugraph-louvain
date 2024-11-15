@@ -40,7 +40,8 @@ runCugraph() {
   rm -rf "$1.csv"
 }
 
-runAll() {
+# Run cuGraph Louvain on each graph
+runEach() {
   # runCugraph "$HOME/Data/web-Stanford.mtx"    0 0 default
   runCugraph "$HOME/Data/indochina-2004.mtx"  0 0 default
   runCugraph "$HOME/Data/uk-2002.mtx"         0 0 default
@@ -57,7 +58,10 @@ runAll() {
   runCugraph "$HOME/Data/kmer_V1r.mtx"        0 1 default
 }
 
-runAll
+# Run 5 times
+for i in {1..5}; do
+  runEach
+done
 
 # Signal completion
 curl -X POST "https://maker.ifttt.com/trigger/puzzlef/with/key/${IFTTT_KEY}?value1=$src$1"
