@@ -4,28 +4,14 @@ import time
 import rmm
 import cudf
 import cugraph
-import threading
+import subprocess
 from pynvml import *
-
-
-
-
-# Monitor GPU memory usage
-def gpu_memory_usage():
-  handle = nvmlDeviceGetHandleByIndex(0)
-  while running:
-    info = nvmlDeviceGetMemoryInfo(handle)
-    print("Total memory: {:.4f} GB".format(info.total/1024**3), flush=True)
-    print("Free memory:  {:.4f} GB".format(info.free /1024**3), flush=True)
-    print("Used memory:  {:.4f} GB".format(info.used /1024**3), flush=True)
-    time.sleep(0.1)
 
 
 
 
 # Initialize RMM pool
 nvmlInit()
-running = True
 mode = sys.argv[2]
 print("Initializing RMM pool...", flush=True)
 if mode == "managed":
@@ -51,8 +37,9 @@ info = nvmlDeviceGetMemoryInfo(handle)
 print("Initial Total memory: {:.4f} GB".format(info.total/1024**3), flush=True)
 print("Initial Free memory:  {:.4f} GB".format(info.free /1024**3), flush=True)
 print("Initial Used memory:  {:.4f} GB".format(info.used /1024**3), flush=True)
-thread = threading.Thread(target=gpu_memory_usage)
-thread.start()
+
+# Monitor GPU memory usage in a separate process (every 0.1 s)
+proc = subprocess.Popen(["python", "monitor_memory.py", str(os.getpid())])
 
 # Run Louvain
 print("Running Louvain (first)...", flush=True)
@@ -66,6 +53,5 @@ for i in range(4):
   print("Louvain took: {:.6f} s".format(t1-t0), flush=True)
 
 # Clean up
-running = False
-thread.join()
+proc.kill()
 nvmlShutdown()
